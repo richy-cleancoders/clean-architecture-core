@@ -42,7 +42,8 @@ Extends the `\Cleancoders\Core\Usecase\Usecase` class and implements `\Cleancode
 ### Response
 
 - Use `\Cleancoders\Core\Response\Response` to create usecase `response`.
-- Supports success/failure status, custom message, HTTP status codes, and response data.
+- Supports success/failure status, custom message, HTTP status codes, and response data. 
+- I recommend you to extends `\Cleancoders\Core\Response\Response` class to create your own response
 
 ## Example of how to use the core library
 
@@ -91,7 +92,60 @@ final class CustomRequest extends Request implements CustomRequestInterface
     {
         Assert::that($requestData['field_1'], '[field_1] field must not be an empty string.')->notEmpty()->string();
         Assert::that($requestData['field_2'], '[field_2] field must not be an empty string.')->notEmpty()->string();
+        
+        // example if you use symfony validator library
+       
+        /**
+         * You have to import
+         * use Symfony\Component\Validator\ConstraintViolationListInterface;
+         * use Symfony\Component\Validator\Validation;
+         */
+        $validator = Validation::createValidator();
+        $violations = $validator->validate($requestData, new Assert\Collection([
+            'field_1' => [
+                new Assert\NotBlank(message: '[field_1] can not be blank'),
+                new Assert\Type(type: 'string', message: '[field_1] must be a string'),
+                new Assert\Length([
+                    'min' => 2,
+                    'max' => 10,
+                    'minMessage' => '[field_1] must be at least [{{ limit }}] characters long',
+                    'maxMessage' => '[field_1] can not be longer than [{{ limit }}] characters',
+                ])
+            ],
+            'field_2' => [
+                new Assert\NotBlank(message: '[field_2] can not be blank'),
+                new Assert\Type(type: 'string', message: '[field_2] must be a string'),
+                new Assert\Length([
+                    'min' => 2,
+                    'max' => 10,
+                    'minMessage' => '[field_2] must be at least [{{ limit }}] characters long',
+                    'maxMessage' => '[field_2] can not be longer than [{{ limit }}] characters',
+                ])
+            ]
+        ]));
+
+        if (count($violations) > 0) {
+            throw new BadRequestContentException(json_encode(self::buildError($violations)));
+        }
     }
+    
+    /**
+     * Builds an error array from the given ConstraintViolationListInterface if you use symfony validator library.
+     *
+     * @param ConstraintViolationListInterface $violations The list of constraint violations
+     * @return array The error array built from the violations
+     */
+    private static function buildError(ConstraintViolationListInterface $violations): array
+    {
+        $errors = [];
+        foreach ($violations as $violation) {
+            $propertyPath = $violation->getPropertyPath();
+            $errors[$propertyPath][] = $violation->getMessage();
+        }
+
+        return $errors;
+    }
+    
 }
 
 // when unauthorized fields
@@ -187,6 +241,7 @@ final class CustomUsecase extends Usecase implements CustomUsecaseInterface
         // process your business logic here
         
         // send usecase response without content
+        // I recommend you to extends "Response" class to create your own response
         $this->presenter->present(Response::create());
     }
 }
@@ -202,9 +257,10 @@ final class CustomUsecase extends Usecase implements CustomUsecaseInterface
         // process your business logic here
         
         // send usecase response with content
+        // I recommend you to extends "Response" class to create your own response
         $this->presenter->present(Response::create(
             success: true,
-            statusCode: StatusCode::OK,
+            statusCode: StatusCode::OK->value,
             message: 'success.response',
             data: [
                 'field' => 'value',
@@ -224,9 +280,10 @@ final class CustomUsecase extends Usecase implements CustomUsecaseInterface
         // process your business logic here
         
         // send usecase response with content
+        // I recommend you to extends "Response" class to create your own response
         $this->presenter->present(Response::create(
             success: true,
-            statusCode: StatusCode::OK,
+            statusCode: StatusCode::OK->value,
             message: 'success.response',
             data: [
                 'field' => 'value',
