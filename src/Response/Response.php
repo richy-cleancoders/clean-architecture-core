@@ -15,14 +15,14 @@ namespace Cleancoders\Core\Response;
  *
  * @author Ulrich Geraud AHOGLA. <iamcleancoder@gmail.com
  */
-final class Response implements ResponseInterface
+class Response implements ResponseInterface
 {
     /**
      * @param array<string, mixed> $data
      */
     private function __construct(
         private readonly bool $success,
-        private readonly StatusCode $statusCode,
+        private readonly int $statusCode,
         private readonly ?string $message,
         private readonly array $data
     ) {
@@ -32,13 +32,13 @@ final class Response implements ResponseInterface
      * Create a new application response
      *
      * @param bool $success True if the response was successfully, false otherwise
-     * @param StatusCode $statusCode The response status code
+     * @param int $statusCode The response status code
      * @param string|null $message The custom response message
      * @param array<string, mixed> $data The response data
      */
     public static function create(
         bool $success = true,
-        StatusCode $statusCode = StatusCode::NO_CONTENT,
+        int $statusCode = StatusCode::NO_CONTENT->value,
         ?string $message = null,
         array $data = []
     ): self {
@@ -63,7 +63,7 @@ final class Response implements ResponseInterface
      */
     public function getStatusCode(): int
     {
-        return $this->statusCode->getValue();
+        return $this->statusCode;
     }
 
     /**

@@ -21,9 +21,9 @@ abstract class Exception extends RuntimeException
     /**
      * Exception status code.
      *
-     * @var StatusCode The status code
+     * @var int The status code
      */
-    protected StatusCode $statusCode = StatusCode::BAD_REQUEST;
+    protected int $statusCode = StatusCode::BAD_REQUEST->value;
 
     /**
      * Custom data into the exception.
@@ -39,7 +39,7 @@ abstract class Exception extends RuntimeException
     {
         parent::__construct(
             message: $errors['message'] ?? '',
-            code: $this->statusCode->getValue()
+            code: $this->statusCode
         );
         $this->errors = $errors;
     }

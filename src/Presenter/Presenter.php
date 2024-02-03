@@ -15,7 +15,7 @@ use Cleancoders\Core\Response\ResponseInterface;
 /**
  * @author Ulrich Geraud AHOGLA. <iamcleancoder@gmail.com
  */
-abstract class Presenter implements PresenterInterface
+abstract class Presenter
 {
     /**
      * The application response

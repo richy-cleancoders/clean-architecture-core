@@ -120,7 +120,7 @@ final class UsecaseTest extends TestCase
             public function execute(): void
             {
                 $this->presenter->present(Response::create(
-                    statusCode: StatusCode::OK,
+                    statusCode: StatusCode::OK->getValue(),
                     data: $this->getRequestData()
                 ));
             }

@@ -25,7 +25,7 @@ enum StatusCode: int
     case UNAUTHORIZED = 401;
     case FORBIDDEN = 403;
     case NOT_FOUND = 404;
-    case RESSOURCE_ALREADY_EXISTS = 409;
+    case RESOURCE_ALREADY_EXISTS = 409;
     case EXPECTATION_FAILED = 417;
     case LOCKED = 423;
     case TOO_MANY_REQUESTS = 429;

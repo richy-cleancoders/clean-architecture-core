@@ -35,14 +35,14 @@ final class ResponseTest extends TestCase
             'field' => 1,
         ];
         $response = Response::create(
-            statusCode: StatusCode::OK,
-            message: 'Successfully get ressource.',
+            statusCode: StatusCode::OK->getValue(),
+            message: 'Successfully get resource.',
             data: $responseData
         );
 
         $this->assertTrue($response->isSuccess());
         $this->assertEquals(StatusCode::OK->getValue(), $response->getStatusCode());
-        $this->assertEquals('Successfully get ressource.', $response->getMessage());
+        $this->assertEquals('Successfully get resource.', $response->getMessage());
         $this->assertEquals($responseData, $response->getData());
     }
 
@@ -53,14 +53,14 @@ final class ResponseTest extends TestCase
             'field_2' => 'value',
         ];
         $response = Response::create(
-            statusCode: StatusCode::CREATED,
-            message: 'Successfully create ressource.',
+            statusCode: StatusCode::CREATED->getValue(),
+            message: 'Successfully create resource.',
             data: $responseData
         );
 
         $this->assertTrue($response->isSuccess());
         $this->assertEquals(StatusCode::CREATED->getValue(), $response->getStatusCode());
-        $this->assertEquals('Successfully create ressource.', $response->getMessage());
+        $this->assertEquals('Successfully create resource.', $response->getMessage());
         $this->assertEquals($responseData, $response->getData());
     }
 
@@ -68,7 +68,7 @@ final class ResponseTest extends TestCase
     {
         $response = Response::create(
             success: false,
-            statusCode: StatusCode::BAD_REQUEST,
+            statusCode: StatusCode::BAD_REQUEST->getValue(),
             data: []
         );
 
@@ -81,7 +81,7 @@ final class ResponseTest extends TestCase
     {
         $response = Response::create(
             success: false,
-            statusCode: StatusCode::BAD_REQUEST,
+            statusCode: StatusCode::BAD_REQUEST->getValue(),
             data: [
                 'key_1' => 1234,
             ]
@@ -94,7 +94,7 @@ final class ResponseTest extends TestCase
     {
         $response = Response::create(
             success: false,
-            statusCode: StatusCode::BAD_REQUEST,
+            statusCode: StatusCode::BAD_REQUEST->getValue(),
             data: [
                 'key_1' => 1234,
             ]
