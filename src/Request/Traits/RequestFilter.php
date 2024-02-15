@@ -30,7 +30,7 @@ trait RequestFilter
      * Filter request data to identified missing/unauthorized fields.
      *
      * @param array<string, mixed> $requestPayload
-     * @return array<string, array<int, string>>
+     * @return array<string, array<int|string, string>>
      */
     protected static function requestPayloadFilter(array $requestPayload): array
     {
@@ -77,25 +77,29 @@ trait RequestFilter
     /**
      * Find missing fields from request.
      *
+     * @param array<string, mixed> $authorizedFields
      * @param array<string, mixed> $requestPayload
-     * @param array<string, mixed> $requestFields
-     * @return array<int, string>
+     * @return array<int|string, string>
      */
     protected static function findMissingFields(
+        array $authorizedFields,
         array $requestPayload,
-        array $requestFields,
         string $prefix = ''
     ): array {
         $missingFields = [];
-        foreach ($requestPayload as $field => $value) {
+        foreach ($authorizedFields as $field => $value) {
             $fullKey = $prefix . $field;
-            if (!array_key_exists($field, $requestFields)) {
-                $missingFields[] = $fullKey;
-            } elseif (is_array($value) && is_array($requestFields[$field])) {
-                $missingFields = array_merge(
-                    $missingFields,
-                    static::findMissingFields($value, $requestFields[$field], $fullKey . '.')
-                );
+            if ($value && !array_key_exists($field, $requestPayload)) {
+                $missingFields[$fullKey] = is_array($value) ? 'required field type not matching array' : 'required';
+            } elseif (array_key_exists($field, $requestPayload)) {
+                if (is_array($value) && gettype($requestPayload[$field]) !== gettype($value)) {
+                    $missingFields[$fullKey] = 'required field type not matching array';
+                } elseif (is_array($requestPayload[$field]) && is_array($value)) {
+                    $missingFields = array_merge(
+                        $missingFields,
+                        static::findMissingFields($value, $requestPayload[$field], $fullKey . '.')
+                    );
+                }
             }
         }
 

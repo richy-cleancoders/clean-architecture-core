@@ -49,7 +49,7 @@ abstract class Request
     /**
      * Throws an error if the request has missing fields.
      *
-     * @param array<int, string> $missingFields
+     * @param array<int|string, string> $missingFields
      */
     protected static function throwMissingFieldsExceptionIfNeeded(array $missingFields): void
     {
@@ -64,7 +64,7 @@ abstract class Request
     /**
      * Throws an error if the request has unauthorized fields.
      *
-     * @param array<int, string> $unauthorizedFields
+     * @param array<int|string, string> $unauthorizedFields
      */
     protected static function throwUnRequiredFieldsExceptionIfNeeded(array $unauthorizedFields): void
     {

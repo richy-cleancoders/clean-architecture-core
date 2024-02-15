@@ -31,8 +31,8 @@ final class CustomRequestTest extends TestCase
     {
         $this->customRequest = new class () extends BaseRequest implements RequestInterface {
             protected static array $requestPossibleFields = [
-                'field_1' => null,
-                'field_2' => null,
+                'field_1' => true,
+                'field_2' => true,
             ];
         };
     }
@@ -56,9 +56,73 @@ final class CustomRequestTest extends TestCase
     public function testCanBuildNewRequestWithParameters(): void
     {
         $this->assertInstanceOf(RequestBuilderInterface::class, $this->customRequest::createFromPayload([
-            'field_1' => 1,
-            'field_2' => 'value',
+            'field_1' => true,
+            'field_2' => true,
         ]));
+    }
+
+    public function testCanBuildNewRequestWithOptionalParameters(): void
+    {
+        try {
+            $customRequest = new class () extends BaseRequest implements RequestInterface {
+                protected static array $requestPossibleFields = [
+                    'field_1' => true,
+                    'field_2' => false,
+                    'field_3' => true,
+                    'field_4' => [
+                        'field_5' => false,
+                        'field_6' => true,
+                    ],
+                ];
+            };
+            $customRequest::createFromPayload([
+                'field_1' => 1,
+                'field_3' => new stdClass(),
+                'field_4' => [
+                    'field_5' => 2,
+                ],
+            ]);
+        } catch (BadRequestContentException $exception) {
+            $this->errorsFieldAssertion(
+                $exception,
+                [
+                    'field_4.field_6' => 'required',
+                ],
+                'missing_fields',
+                'missing.required.fields'
+            );
+        }
+    }
+
+    public function testCanBuildNewRequestWithWrongNestedParameters(): void
+    {
+        try {
+            $customRequest = new class () extends BaseRequest implements RequestInterface {
+                protected static array $requestPossibleFields = [
+                    'field_1' => true,
+                    'field_2' => false,
+                    'field_3' => true,
+                    'field_4' => [
+                        'field_5' => false,
+                        'field_6' => true,
+                    ],
+                ];
+            };
+            $customRequest::createFromPayload([
+                'field_1' => 1,
+                'field_3' => new stdClass(),
+                'field_4' => 1,
+            ]);
+        } catch (BadRequestContentException $exception) {
+            $this->errorsFieldAssertion(
+                $exception,
+                [
+                    'field_4' => 'required field type not matching array',
+                ],
+                'missing_fields',
+                'missing.required.fields'
+            );
+        }
     }
 
     public function testCanNotBuildNewRequestWithUnrequiredParameters(): void
@@ -84,11 +148,11 @@ final class CustomRequestTest extends TestCase
         try {
             $customRequest = new class () extends BaseRequest implements RequestInterface {
                 protected static array $requestPossibleFields = [
-                    'field_1' => null,
-                    'field_2' => null,
-                    'field_3' => null,
+                    'field_1' => true,
+                    'field_2' => true,
+                    'field_3' => true,
                     'field_4' => [
-                        'field_5' => null,
+                        'field_5' => true,
                     ],
                 ];
             };
@@ -116,20 +180,20 @@ final class CustomRequestTest extends TestCase
         try {
             $customRequest = new class () extends BaseRequest implements RequestInterface {
                 protected static array $requestPossibleFields = [
-                    'field_1' => null,
-                    'field_2' => null,
-                    'field_3' => null,
+                    'field_1' => true,
+                    'field_2' => true,
+                    'field_3' => true,
                     'field_4' => [
                         'field_5' => [
-                            'field_6' => '',
+                            'field_6' => true,
                         ],
                     ],
                 ];
             };
             $customRequest::createFromPayload([
-                'field_1' => 1,
-                'field_2' => 'value',
-                'field_3' => new stdClass(),
+                'field_1' => true,
+                'field_2' => true,
+                'field_3' => true,
                 'field_4' => [
                     'field_5' => [],
                 ],
@@ -137,7 +201,9 @@ final class CustomRequestTest extends TestCase
         } catch (BadRequestContentException $exception) {
             $this->errorsFieldAssertion(
                 $exception,
-                ['field_4.field_5.field_6'],
+                [
+                    'field_4.field_5.field_6' => 'required',
+                ],
                 'missing_fields',
                 'missing.required.fields'
             );
@@ -148,12 +214,14 @@ final class CustomRequestTest extends TestCase
     {
         try {
             $this->customRequest::createFromPayload([
-                'field_1' => 1,
+                'field_1' => true,
             ]);
         } catch (BadRequestContentException $exception) {
             $this->errorsFieldAssertion(
                 $exception,
-                ['field_2'],
+                [
+                    'field_2' => 'required',
+                ],
                 'missing_fields',
                 'missing.required.fields'
             );
@@ -164,9 +232,9 @@ final class CustomRequestTest extends TestCase
     {
         $customRequest = new class () extends BaseRequest implements RequestInterface {
             protected static array $requestPossibleFields = [
-                'field_1' => null,
-                'field_2' => null,
-                'field_3' => null,
+                'field_1' => true,
+                'field_2' => true,
+                'field_3' => true,
             ];
         };
         $payload = [
@@ -181,9 +249,9 @@ final class CustomRequestTest extends TestCase
     {
         $customRequest = new class () extends BaseRequest implements RequestInterface {
             protected static array $requestPossibleFields = [
-                'field_1' => null,
-                'field_2' => null,
-                'field_3' => null,
+                'field_1' => true,
+                'field_2' => true,
+                'field_3' => true,
             ];
 
             protected static function applyConstraintsOnRequestFields(array $requestData): void
@@ -208,7 +276,7 @@ final class CustomRequestTest extends TestCase
     }
 
     /**
-     * @param array<int, string> $fields
+     * @param array<int|string, string> $fields
      */
     private function errorsFieldAssertion(
         Exception $exception,

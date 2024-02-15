@@ -69,8 +69,8 @@ interface CustomRequestInterface extends RequestInterface
 final class CustomRequest extends Request implements CustomRequestInterface
 {
     protected static array $requestPossibleFields = [
-        'field_1' => null,
-        'field_2' => null,
+        'field_1' => true, // required parameter
+        'field_2' => false, // optional parameter
     ];
 }
 
@@ -80,8 +80,8 @@ modify the `applyConstraintsOnRequestFields` methods as below:
 final class CustomRequest extends Request implements CustomRequestInterface
 {
     protected static array $requestPossibleFields = [
-        'field_1' => null,
-        'field_2' => null,
+        'field_1' => true,
+        'field_2' => true,
     ];
     
     /**
@@ -183,12 +183,12 @@ dd($request->getRequestData()); // ['field_1' => 1, 'field_2' => 'value']
 final class CustomRequest extends Request implements CustomRequestInterface
 {
     protected static array $requestPossibleFields = [
-        'field_1' => null,
-        'field_2' => null,
-        'field_3' => null,
+        'field_1' => true, // required parameters
+        'field_2' => true, // required parameters
+        'field_3' => false, // optional parameters
         'field_4' => [
             'field_5' => [
-                'field_6' => '',
+                'field_6' => true, // required parameters
             ],
         ],
     ];
@@ -415,6 +415,10 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/', name: "_app", methods: 'GET')]
 final class CustomController extends AbstractController
 {
+    /**
+     *  you don't have to have an interface to present it. You can directly
+     *  inject the concrete class of your presenter into the controller's constructor
+     */
     public function __construct(
         private readonly CustomPresenterInterface $customPresenter,
         private readonly CustomUsecaseInterface $customUsecase,
@@ -512,6 +516,10 @@ final class CustomController extends Controller
 
 final class CustomController extends Controller
 {
+     /**
+     *  you don't have to have an interface to present it. You can directly
+     *  inject the concrete class of your presenter into the controller's constructor
+     */
     public function __construct(
         private readonly CustomPresenterInterface $customPresenter,
         private readonly CustomUsecaseInterface $customUsecase
