@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Cleancoders\Core\Request;
 
+use Cleancoders\Core\Request\Traits\RequestTransformer;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -19,6 +20,8 @@ use Ramsey\Uuid\Uuid;
  */
 final class RequestBuilder implements RequestBuilderInterface
 {
+    use RequestTransformer;
+
     /**
      * Application request uniq id
      */
@@ -47,18 +50,21 @@ final class RequestBuilder implements RequestBuilderInterface
     }
 
     /**
-     * Get application request data.
+     * Get application request data as object.
+     */
+    public function getRequestDataAsObject(): object
+    {
+        return self::requestToObject($this->toArray());
+    }
+
+    /**
+     * Get application request data as array.
      *
      * @return array<string, mixed>
      */
-    public function getRequestData(): array
+    public function getRequestDataAsArray(): array
     {
-        $data = [];
-        foreach ($this->requestParams as $param) {
-            $data[$param->getField()] = $param->getValue();
-        }
-
-        return $data;
+        return $this->toArray();
     }
 
     /**
@@ -67,5 +73,18 @@ final class RequestBuilder implements RequestBuilderInterface
     public function getRequestId(): string
     {
         return $this->requestId;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function toArray(): array
+    {
+        $data = [];
+        foreach ($this->requestParams as $param) {
+            $data[$param->getField()] = $param->getValue();
+        }
+
+        return $data;
     }
 }

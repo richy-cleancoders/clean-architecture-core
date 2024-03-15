@@ -51,10 +51,18 @@ abstract class Usecase
     /**
      * Get request data
      *
-     * @return array<string, mixed>
+     * @return array<string, mixed>|object
      */
-    protected function getRequestData(): array
+    protected function getRequestData(bool $asArray = true): array|object
     {
-        return $this->request !== null ? $this->request->getRequestData() : [];
+        if ($this->request === null) {
+            return [];
+        }
+
+        if ($asArray) {
+            return $this->request->getRequestDataAsArray();
+        }
+
+        return $this->request->getRequestDataAsObject();
     }
 }

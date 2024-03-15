@@ -228,7 +228,7 @@ final class CustomRequestTest extends TestCase
         }
     }
 
-    public function testCanBuildNewRequestWithRequiredParametersAndGetRequestData(): void
+    public function testCanBuildNewRequestWithRequiredParametersAndGetRequestDataAsArray(): void
     {
         $customRequest = new class () extends BaseRequest implements RequestInterface {
             protected static array $requestPossibleFields = [
@@ -242,7 +242,32 @@ final class CustomRequestTest extends TestCase
             'field_2' => 'value',
             'field_3' => new stdClass(),
         ];
-        $this->assertEquals($payload, $customRequest::createFromPayload($payload)->getRequestData());
+        $this->assertEquals($payload, $customRequest::createFromPayload($payload)->getRequestDataAsArray());
+    }
+
+    public function testCanBuildNewRequestWithRequiredParametersAndGetRequestDataAsObject(): void
+    {
+        $customRequest = new class () extends BaseRequest implements RequestInterface {
+            protected static array $requestPossibleFields = [
+                'field_1' => true,
+                'field_2' => true,
+                'field_3' => true,
+            ];
+        };
+        $payload = [
+            'field_1' => 1,
+            'field_2' => 'value',
+            'field_3' => new stdClass(),
+        ];
+
+        $this->assertEquals(
+            json_decode(json_encode([
+                'field_1' => 1,
+                'field_2' => 'value',
+                'field_3' => new stdClass(),
+            ])),
+            $customRequest::createFromPayload($payload)->getRequestDataAsObject()
+        );
     }
 
     public function testCanBuildNewRequestWithRequiredParametersAndApplyCustomConstraints(): void

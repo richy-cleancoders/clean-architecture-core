@@ -11,3 +11,4 @@ parameters:
     checkExplicitMixed: false
     ignoreErrors:
         - '/Cannot call method present\(\) on Cleancoders\\Core\\Presenter\\PresenterInterface\|null\./'
+        - '/Parameter \#1 \$json of function json_decode expects string, string\|false given\./'

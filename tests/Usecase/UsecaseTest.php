@@ -121,7 +121,7 @@ final class UsecaseTest extends TestCase
             {
                 $this->presenter->present(Response::create(
                     statusCode: StatusCode::OK->getValue(),
-                    data: $this->getRequestData()
+                    data: (array)$this->getRequestData()
                 ));
             }
         };

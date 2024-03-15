@@ -236,7 +236,8 @@ final class CustomUsecase extends Usecase implements CustomUsecaseInterface
     public function execute(): void
     {
         // get request data
-        $requestData = $this->getRequestData();
+        $requestData = $this->getRequestData(); // return your request data as array
+        $requestData = $this->getRequestData(false); // return your request data as stdclass object
         
         // process your business logic here
         
@@ -252,7 +253,8 @@ final class CustomUsecase extends Usecase implements CustomUsecaseInterface
 {
     public function execute(): void
     {
-        $requestData = $this->getRequestData(); // return your request data
+        $requestData = $this->getRequestData(); // return your request data as array
+        $requestData = $this->getRequestData(false); // return your request data as stdclass object
         
         // process your business logic here
         
@@ -298,7 +300,8 @@ final class CustomUsecase extends Usecase implements CustomUsecaseInterface
     public function execute(): void
     {
         // get request data
-        $requestData = $this->getRequestData();
+        $requestData = $this->getRequestData(); // return your request data as array
+        $requestData = $this->getRequestData(false); // return your request data as stdclass object
         
         // process your business logic here
         

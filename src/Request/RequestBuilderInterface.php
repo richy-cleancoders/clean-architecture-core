@@ -16,11 +16,16 @@ namespace Cleancoders\Core\Request;
 interface RequestBuilderInterface
 {
     /**
-     * Get application request data.
+     * Get application request data as object.
+     */
+    public function getRequestDataAsObject(): object;
+
+    /**
+     * Get application request data as array.
      *
      * @return array<string, mixed>
      */
-    public function getRequestData(): array;
+    public function getRequestDataAsArray(): array;
 
     /**
      * Get application request uniq id.
